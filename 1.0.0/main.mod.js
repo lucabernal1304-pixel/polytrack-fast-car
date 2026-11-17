@@ -2,13 +2,13 @@ import { PolyMod, MixinType } from "https://cdn.polymodloader.com/cb/PolyTrackMo
 
 class FastCarMod extends PolyMod {
     preInit(pml) {
-        // 2 = 2x acceleration & top speed, 1.5 = 1.5x speed
+        console.log("[FastCarMod] preInit registered!");
         const SPEED_MULTIPLIER = 2;
 
         pml.registerSimWorkerMixin({
             type: MixinType.REPLACE,
-            token: `r.push(n(t,e));`,
-            func: `
+            token: `r.push(n(t,e))`,
+            func: `(() => {
                 if (!self._fastCarLogged) {
                     console.log("[FastCarMod] Physics boost active:", ${SPEED_MULTIPLIER} + "x");
                     self._fastCarLogged = true;
@@ -18,8 +18,8 @@ class FastCarMod extends PolyMod {
                     n(t, e);
                     self._extraStepAcc -= 1;
                 }
-                r.push(n(t, e));
-            `
+                return r.push(n(t, e));
+            })()`
         });
     }
 }
