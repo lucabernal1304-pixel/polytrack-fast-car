@@ -1,4 +1,4 @@
-import { PolyMod, MixinType } from "https://polymodloader.com";
+import { PolyMod, MixinType } from "https://polymodloader.com/cb/PolyTrackMods/PolyModLoader/0.6.3/PolyTypes.js";
 
 class FastCarMod extends PolyMod {
     preInit(pml) {
