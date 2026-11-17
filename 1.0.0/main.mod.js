@@ -18,7 +18,7 @@ class FastCarMod extends PolyMod {
                 self._extraStepAcc = (self._extraStepAcc || 0) + (${SPEED_MULTIPLIER} - 1);
                 while (self._extraStepAcc >= 1) {
                     n(t, e);
-                    _extraStepAcc -= 1;
+                    self._extraStepAcc -= 1;
                 }
                 return r.push(n(t, e));
             })()`
