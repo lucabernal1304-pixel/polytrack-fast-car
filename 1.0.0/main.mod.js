@@ -2,17 +2,22 @@ import { PolyMod, MixinType } from "https://polymodloader.com";
 
 class FastCarMod extends PolyMod {
     preInit(pml) {
-        const SPEED_MULTIPLIER = 1.6;
+        // 1 = normal speed, 2 = 2x acceleration & top speed, 1.5 = 1.5x speed
+        const SPEED_MULTIPLIER = 1.5;
 
         pml.registerSimWorkerMixin({
-            type: MixinType.INSERT,
-            token: "self.onmessage=",
+            type: MixinType.REPLACE,
+            token: `for(const{car:t,controls:e}of i)r.push(n(t,e));`,
             func: `
-                const _origNow = performance.now.bind(performance);
-                const _startNow = _origNow();
-                performance.now = function() {
-                    return _startNow + (_origNow() - _startNow) * ${SPEED_MULTIPLIER};
-                };
+                let _extraStepAcc = 0;
+                for (const { car: t, controls: e } of i) {
+                    _extraStepAcc += (${SPEED_MULTIPLIER} - 1);
+                    while (_extraStepAcc >= 1) {
+                        n(t, e);
+                        _extraStepAcc -= 1;
+                    }
+                    r.push(n(t, e));
+                }
             `
         });
     }
