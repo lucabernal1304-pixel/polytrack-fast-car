@@ -1,16 +1,17 @@
-import { PolyMod, MixinType } from "https://cdn.polymodloader.com"/cb/PolyTrackMods/PolyModLoader/0.6.3/PolyTypes.js;
+import { PolyMod, MixinType } from "https://polymodloader.com";
 
 class FastCarMod extends PolyMod {
     preInit(pml) {
-        const SPEED_MULTIPLIER = 1.5;
+        const SPEED_MULTIPLIER = 1.6;
 
         pml.registerSimWorkerMixin({
             type: MixinType.INSERT,
             token: "self.onmessage=",
             func: `
-                const _origSetInterval = self.setInterval;
-                self.setInterval = function(fn, delay, ...args) {
-                    return _origSetInterval(fn, delay / ${SPEED_MULTIPLIER}, ...args);
+                const _origNow = performance.now.bind(performance);
+                const _startNow = _origNow();
+                performance.now = function() {
+                    return _startNow + (_origNow() - _startNow) * ${SPEED_MULTIPLIER};
                 };
             `
         });
