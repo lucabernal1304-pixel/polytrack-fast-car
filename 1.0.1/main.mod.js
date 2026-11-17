@@ -3,11 +3,11 @@ import { PolyMod, MixinType } from "https://cdn.polymodloader.com/cb/PolyTrackMo
 console.log("[FastCarMod] File loaded!");
 
 class FastCarMod extends PolyMod {
-    init(pml) {
+    init = (pmlInstance) => {
         console.log("[FastCarMod] init() called!");
         const SPEED_MULTIPLIER = 2;
 
-        pml.registerSimWorkerMixin({
+        pmlInstance.registerSimWorkerMixin({
             type: MixinType.REPLACE,
             token: `r.push(n(t, e))`,
             func: `(() => {
@@ -23,7 +23,7 @@ class FastCarMod extends PolyMod {
                 return r.push(n(t, e));
             })()`
         });
-    }
+    };
 }
 
 export let polyMod = new FastCarMod();
