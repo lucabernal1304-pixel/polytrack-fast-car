@@ -30,23 +30,25 @@ class FastCarMod extends PolyMod {
 
         // 2. Sync the 24-bit frame/timer bytes (0..2 and finish frames 8..10) to real 1.0x e.frames
         pmlInstance.registerSimWorkerMixin({
-            type: MixinType.INSERT,
-            token: `[e.id, r.up, r.right, r.down, r.left, r.reset, i],`,
+            type: MixinType.REPLACEBETWEEN,
+            tokenStart: `return new Uint8Array(t.HEAPU8.buffer`,
+            tokenEnd: `.slice().buffer;`,
             func: `
-                );
-                {
-                    const _view = new Uint8Array(t.HEAPU8.buffer, i, 227);
-                    const _realFrames = e.frames | 0;
-                    _view[0] = _realFrames & 255;
-                    _view[1] = (_realFrames >> 8) & 255;
-                    _view[2] = (_realFrames >> 16) & 255;
-                    if (_view[7] & 2) {
-                        _view[8] = _realFrames & 255;
-                        _view[9] = (_realFrames >> 8) & 255;
-                        _view[10] = (_realFrames >> 16) & 255;
-                    }
+                const _outBuf = new Uint8Array(t.HEAPU8.buffer, i, 227).slice();
+                const _realFrames = e.frames | 0;
+                _outBuf.set([
+                    _realFrames & 255,
+                    (_realFrames >> 8) & 255,
+                    (_realFrames >> 16) & 255
+                ], 0);
+                if (_outBuf.at(7) & 2) {
+                    _outBuf.set([
+                        _realFrames & 255,
+                        (_realFrames >> 8) & 255,
+                        (_realFrames >> 16) & 255
+                    ], 8);
                 }
-                void (0
+                return _outBuf.buffer;
             `
         });
     };
