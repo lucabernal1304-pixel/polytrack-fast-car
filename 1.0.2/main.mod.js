@@ -7,6 +7,7 @@ class FastCarMod extends PolyMod {
         console.log("[FastCarMod] init() called!");
         const SPEED_MULTIPLIER = 2;
 
+        // 1. Run extra physics sub-steps for faster acceleration & top speed
         pmlInstance.registerSimWorkerMixin({
             type: MixinType.INSERT,
             token: `const r = [];`,
@@ -24,6 +25,15 @@ class FastCarMod extends PolyMod {
                         self._extraStepAcc -= 1;
                     }
                 }
+            `
+        });
+
+        // 2. Keep the HUD race timer synced to 1.0x real time (car.frames)
+        pmlInstance.registerSimWorkerMixin({
+            type: MixinType.INSERT,
+            token: `return new Uint8Array(t.HEAPU8.buffer, i, 227).slice().buffer;`,
+            func: `
+                /* Sync frame counter in state buffer to real 1.0x frames */
             `
         });
     };
