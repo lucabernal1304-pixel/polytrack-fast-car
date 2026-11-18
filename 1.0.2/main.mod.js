@@ -9,7 +9,7 @@ class FastCarMod extends PolyMod {
 
         pmlInstance.registerSimWorkerMixin({
             type: MixinType.REPLACE,
-            token: `r.push(n(t, e))`,
+            token: `r.push(n(t,e))`,
             func: `(() => {
                 if (!self._fastCarLogged) {
                     console.log("[FastCarMod] Physics boost active:", ${SPEED_MULTIPLIER} + "x");
