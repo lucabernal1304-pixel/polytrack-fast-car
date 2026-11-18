@@ -28,12 +28,25 @@ class FastCarMod extends PolyMod {
             `
         });
 
-        // 2. Keep the HUD race timer synced to 1.0x real time (car.frames)
+        // 2. Sync the 24-bit frame/timer bytes (0..2 and finish frames 8..10) to real 1.0x e.frames
         pmlInstance.registerSimWorkerMixin({
             type: MixinType.INSERT,
-            token: `return new Uint8Array(t.HEAPU8.buffer, i, 227).slice().buffer;`,
+            token: `[e.id, r.up, r.right, r.down, r.left, r.reset, i],`,
             func: `
-                /* Sync frame counter in state buffer to real 1.0x frames */
+                );
+                {
+                    const _view = new Uint8Array(t.HEAPU8.buffer, i, 227);
+                    const _realFrames = e.frames | 0;
+                    _view[0] = _realFrames & 255;
+                    _view[1] = (_realFrames >> 8) & 255;
+                    _view[2] = (_realFrames >> 16) & 255;
+                    if (_view[7] & 2) {
+                        _view[8] = _realFrames & 255;
+                        _view[9] = (_realFrames >> 8) & 255;
+                        _view[10] = (_realFrames >> 16) & 255;
+                    }
+                }
+                void (0
             `
         });
     };
