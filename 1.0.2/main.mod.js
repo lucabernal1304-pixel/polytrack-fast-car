@@ -28,21 +28,29 @@ class FastCarMod extends PolyMod {
             `
         });
 
-        // 2. Sync the 24-bit frame/timer bytes in each buffer of r to real 1.0x car.frames
+        // 2. Write sequential 1.0x frame timestamps (1, 2, 3...) into each CarState buffer
         pmlInstance.registerSimWorkerMixin({
             type: MixinType.INSERT,
             token: `for (const { car: t, controls: e } of i) r.push(n(t, e));`,
             func: `
                 r.forEach((_buf, _idx) => {
+                    const _carObj = i.slice(_idx, _idx + 1).pop().car;
+                    if (_carObj._lastWasmFrames == null || _carObj.frames < _carObj._lastWasmFrames) {
+                        _carObj._realFrames = _carObj.frames;
+                    } else {
+                        _carObj._realFrames = (_carObj._realFrames || 0) + 1;
+                    }
+                    _carObj._lastWasmFrames = _carObj.frames;
+
                     const _dv = new DataView(_buf);
-                    const _realFrames = i.slice(_idx, _idx + 1).pop().car.frames | 0;
-                    _dv.setUint8(0, _realFrames & 255);
-                    _dv.setUint8(1, (_realFrames >> 8) & 255);
-                    _dv.setUint8(2, (_realFrames >> 16) & 255);
+                    const _f = _carObj._realFrames | 0;
+                    _dv.setUint8(0, _f & 255);
+                    _dv.setUint8(1, (_f >> 8) & 255);
+                    _dv.setUint8(2, (_f >> 16) & 255);
                     if (_dv.getUint8(7) & 2) {
-                        _dv.setUint8(8, _realFrames & 255);
-                        _dv.setUint8(9, (_realFrames >> 8) & 255);
-                        _dv.setUint8(10, (_realFrames >> 16) & 255);
+                        _dv.setUint8(8, _f & 255);
+                        _dv.setUint8(9, (_f >> 8) & 255);
+                        _dv.setUint8(10, (_f >> 16) & 255);
                     }
                 });
             `
