@@ -8,20 +8,23 @@ class FastCarMod extends PolyMod {
         const SPEED_MULTIPLIER = 2;
 
         pmlInstance.registerSimWorkerMixin({
-            type: MixinType.REPLACE,
-            token: `r.push(n(t,e))`,
-            func: `(() => {
-                if (!self._fastCarLogged) {
-                    console.log("[FastCarMod] Physics boost active:", ${SPEED_MULTIPLIER} + "x");
-                    self._fastCarLogged = true;
+            type: MixinType.INSERT,
+            token: `const r=[];`,
+            func: `
+                if (i.length > 0) {
+                    if (!self._fastCarLogged) {
+                        console.log("[FastCarMod] Physics boost active:", ${SPEED_MULTIPLIER} + "x");
+                        self._fastCarLogged = true;
+                    }
+                    self._extraStepAcc = (self._extraStepAcc || 0) + (${SPEED_MULTIPLIER} - 1);
+                    while (self._extraStepAcc >= 1) {
+                        for (const { car: _fcCar, controls: _fcCtrl } of i) {
+                            n(_fcCar, _fcCtrl);
+                        }
+                        self._extraStepAcc -= 1;
+                    }
                 }
-                self._extraStepAcc = (self._extraStepAcc || 0) + (${SPEED_MULTIPLIER} - 1);
-                while (self._extraStepAcc >= 1) {
-                    n(t, e);
-                    self._extraStepAcc -= 1;
-                }
-                return r.push(n(t, e));
-            })()`
+            `
         });
     };
 }
