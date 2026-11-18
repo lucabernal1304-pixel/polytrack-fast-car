@@ -9,7 +9,7 @@ class FastCarMod extends PolyMod {
 
         pmlInstance.registerSimWorkerMixin({
             type: MixinType.INSERT,
-            token: `const r=[];`,
+            token: `const r = [];`,
             func: `
                 if (i.length > 0) {
                     if (!self._fastCarLogged) {
