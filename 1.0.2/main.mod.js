@@ -33,22 +33,18 @@ class FastCarMod extends PolyMod {
             type: MixinType.INSERT,
             token: `for (const { car: t, controls: e } of i) r.push(n(t, e));`,
             func: `
-                for (let _k = 0; _k < r.length; _k++) {
-                    const _view = new Uint8Array(r.at(_k));
-                    const _realFrames = i.at(_k).car.frames | 0;
-                    _view.set([
-                        _realFrames & 255,
-                        (_realFrames >> 8) & 255,
-                        (_realFrames >> 16) & 255
-                    ], 0);
-                    if (_view.at(7) & 2) {
-                        _view.set([
-                            _realFrames & 255,
-                            (_realFrames >> 8) & 255,
-                            (_realFrames >> 16) & 255
-                        ], 8);
+                r.forEach((_buf, _idx) => {
+                    const _dv = new DataView(_buf);
+                    const _realFrames = i.slice(_idx, _idx + 1).pop().car.frames | 0;
+                    _dv.setUint8(0, _realFrames & 255);
+                    _dv.setUint8(1, (_realFrames >> 8) & 255);
+                    _dv.setUint8(2, (_realFrames >> 16) & 255);
+                    if (_dv.getUint8(7) & 2) {
+                        _dv.setUint8(8, _realFrames & 255);
+                        _dv.setUint8(9, (_realFrames >> 8) & 255);
+                        _dv.setUint8(10, (_realFrames >> 16) & 255);
                     }
-                }
+                });
             `
         });
     };
