@@ -28,32 +28,27 @@ class FastCarMod extends PolyMod {
             `
         });
 
-        // 2. Sync the 24-bit frame/timer bytes (0..2 and finish frames 8..10) to real 1.0x e.frames
+        // 2. Sync the 24-bit frame/timer bytes in each buffer of r to real 1.0x car.frames
         pmlInstance.registerSimWorkerMixin({
-            type: MixinType.REPLACEBETWEEN,
-            tokenStart: `"updateCarModel"`,
-            tokenEnd: `.slice().buffer;`,
+            type: MixinType.INSERT,
+            token: `for (const { car: t, controls: e } of i) r.push(n(t, e));`,
             func: `
-                "updateCarModel",
-                "void",
-                ["number", "boolean", "boolean", "boolean", "boolean", "boolean", "number"],
-                [e.id, r.up, r.right, r.down, r.left, r.reset, i]
-              );
-              const _outBuf = new Uint8Array(t.HEAPU8.buffer, i, 227).slice();
-              const _realFrames = e.frames | 0;
-              _outBuf.set([
-                  _realFrames & 255,
-                  (_realFrames >> 8) & 255,
-                  (_realFrames >> 16) & 255
-              ], 0);
-              if (_outBuf.at(7) & 2) {
-                  _outBuf.set([
-                      _realFrames & 255,
-                      (_realFrames >> 8) & 255,
-                      (_realFrames >> 16) & 255
-                  ], 8);
-              }
-              return _outBuf.buffer;
+                for (let _k = 0; _k < r.length; _k++) {
+                    const _view = new Uint8Array(r.at(_k));
+                    const _realFrames = i.at(_k).car.frames | 0;
+                    _view.set([
+                        _realFrames & 255,
+                        (_realFrames >> 8) & 255,
+                        (_realFrames >> 16) & 255
+                    ], 0);
+                    if (_view.at(7) & 2) {
+                        _view.set([
+                            _realFrames & 255,
+                            (_realFrames >> 8) & 255,
+                            (_realFrames >> 16) & 255
+                        ], 8);
+                    }
+                }
             `
         });
     };
