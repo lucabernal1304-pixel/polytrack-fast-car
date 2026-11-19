@@ -9,20 +9,20 @@ class FastCarMod extends PolyMod {
         // 1. Increase top speed cap (vanilla = 155 -> 350 for ~2.25x top speed)
         pmlInstance.registerPhysicsMixin({
             type: 0,
-            offset: 195259,
+            offset: 195258,
             value: 350.0
         });
 
         // 2. Increase engine acceleration force (vanilla = 46 -> 115 for 2.5x acceleration)
         pmlInstance.registerPhysicsMixin({
             type: 0,
-            offset: 195269,
+            offset: 195268,
             value: 115.0
         });
 
         pmlInstance.registerPhysicsMixin({
             type: 0,
-            offset: 195276,
+            offset: 195275,
             value: 115.0
         });
     };
