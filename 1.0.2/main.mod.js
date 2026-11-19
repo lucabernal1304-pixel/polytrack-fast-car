@@ -6,7 +6,7 @@ class FastCarMod extends PolyMod {
     init = (pmlInstance) => {
         console.log("[FastCarMod] Applying WASM engine & top-speed boost...");
 
-        // Triggers PolyModLoader to load the patched physics WASM via getPhysicsLibURL()
+        // Triggers PolyModLoader to route polytrack_physics.js through getPhysicsLibURL()
         pmlInstance.registerPhysicsLibMixin({
             type: MixinType.INSERT,
             token: `PolyTrackPhysics`,
@@ -15,20 +15,20 @@ class FastCarMod extends PolyMod {
 
         // 1. Increase top speed cap (vanilla = 155 -> 350 for ~2.25x top speed)
         pmlInstance.registerPhysicsMixin({
-            type: PhysicsMixinType.PATCH_F32,
+            type: 0,
             offset: 195259,
             value: 350.0
         });
 
         // 2. Increase engine acceleration force (vanilla = 46 -> 115 for 2.5x acceleration)
         pmlInstance.registerPhysicsMixin({
-            type: PhysicsMixinType.PATCH_F32,
+            type: 0,
             offset: 195269,
             value: 115.0
         });
 
         pmlInstance.registerPhysicsMixin({
-            type: PhysicsMixinType.PATCH_F32,
+            type: 0,
             offset: 195276,
             value: 115.0
         });
