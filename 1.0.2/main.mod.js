@@ -10,7 +10,7 @@ class FastCarMod extends PolyMod {
         pmlInstance.registerPhysicsMixin({
             type: 0,
             offset: 194624,
-            value: 20000.0
+            value: 100000.0
         });
     };
 }
